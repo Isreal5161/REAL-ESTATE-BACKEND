@@ -1,7 +1,7 @@
 // routes/listingRoutes.js
 const express = require("express");
 const router = express.Router();
-const Listing = require("./listing");
+const Listing = require("../models/listing");
 const multer = require("multer");
 const { v2: cloudinary } = require("cloudinary");
 const streamifier = require("streamifier");
