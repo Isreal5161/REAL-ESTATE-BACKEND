@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const listingRoutes = require("./models/Routes/listingRoutes"); // matches exact casing
+const listingRoutes = require("./models/routes/listingRoutes"); // matches exact casing
 app.use("/api/listings", listingRoutes);
 
 // MongoDB Connection
