@@ -10,7 +10,7 @@ const listingSchema = new mongoose.Schema(
     beds: { type: Number, required: true },
     bathrooms: { type: Number, required: true },
     rooms: { type: Number, required: true },
-    guests: { type: Number, required: true },
+    guests: { type: Number, required: false },
     size: { type: Number, required: true },
     unitMeasure: { type: String, required: true },
     price: { type: Number, required: true },
