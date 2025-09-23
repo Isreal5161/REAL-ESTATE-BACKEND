@@ -11,7 +11,7 @@ const listingSchema = new mongoose.Schema(
     bathrooms: { type: Number, required: true },
     rooms: { type: Number, required: true },
     guests: { type: Number, required: false },
-    size: { type: Number, required: true },
+    size: { type: Number, required: false },
     unitMeasure: { type: String, required: true },
     price: { type: Number, required: true },
     address: { type: String, required: true },
