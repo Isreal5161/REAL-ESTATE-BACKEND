@@ -110,4 +110,44 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
+// ✅ GET dashboard statistics
+router.get("/dashboard/stats", async (req, res) => {
+  try {
+    // Get active listings count
+    const activeListings = await Listing.countDocuments({ status: "active" });
+
+    // Get total earnings (this is a placeholder - you might want to add a proper earnings model later)
+    const totalEarnings = 0; // This will be replaced with actual earnings calculation
+
+    // Get reservation count (placeholder - you might want to add a proper reservations model)
+    const reservationCount = 0; // This will be replaced with actual reservation count
+
+    // Get recent reservations (placeholder)
+    const recentReservations = [];
+
+    // Get recent messages (placeholder)
+    const recentMessages = [];
+
+    res.json({
+      activeListings,
+      totalEarnings,
+      reservationCount,
+      recentReservations,
+      recentMessages,
+      dashboard: {
+        stats: {
+          activeListings,
+          reservationCount,
+          totalEarnings
+        },
+        reservations: recentReservations,
+        messages: recentMessages
+      }
+    });
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ message: "Failed to fetch dashboard statistics", error: error.message });
+  }
+});
+
 module.exports = router;
