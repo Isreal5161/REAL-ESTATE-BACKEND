@@ -9,10 +9,17 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 5000;
 const server = require('http').createServer(app);
+
+// Configure CORS
+app.use(cors({
+    origin: 'https://new-dashboard-admin-dasbboard.vercel.app',
+    credentials: true
+}));
 const io = require('socket.io')(server, {
     cors: {
-        origin: "*",
-        methods: ["GET", "POST"]
+        origin: ["https://new-dashboard-admin-dasbboard.vercel.app"],
+        methods: ["GET", "POST"],
+        credentials: true
     }
 });
 
