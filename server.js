@@ -78,32 +78,22 @@ app.set('io', io);
 app.set('connectedAgents', connectedAgents);
 
 // Database connection
-mongoose.connect(process.env.MONGO_URI, {
+console.log('Connecting to MongoDB...');
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('MongoDB connection error:', err));
-
-// Start server
-server.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+.then(() => {
+    console.log('✅ MongoDB connected successfully');
+    // Start server after successful database connection
+    server.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT}`);
+    });
+})
+.catch(err => {
+    console.error('MongoDB connection error:', err);
+    process.exit(1); // Exit if database connection fails
 });
-app.use("/api/payouts", payoutRoutes);
-app.use("/api/bookings", bookingRoutes);
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'));
-
-// MongoDB Connection
-mongoose
-  .connect(process.env.MONGO_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("✅ MongoDB connected");
-    // Changed from app.listen to server.listen to enable Socket.IO
-    server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
-  })
-  .catch((error) => console.error("MongoDB connection error:", error));
