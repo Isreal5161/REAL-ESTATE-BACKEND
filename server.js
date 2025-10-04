@@ -66,18 +66,18 @@ io.on('connection', (socket) => {
 app.set('io', io);
 app.set('connectedAgents', connectedAgents);
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+// Database connection
+mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch(err => console.error('MongoDB connection error:', err));
 
-// Routes
-const listingRoutes = require("./listingRoutes"); // matches exact casing
-const verificationRoutes = require("./routes/verificationRoutes");
-const payoutRoutes = require("./routes/payoutRoutes");
-const bookingRoutes = require("./bookingRoutes"); // Updated path
-
-app.use("/api/listings", listingRoutes);
-app.use("/api/verification", verificationRoutes);
+// Start server
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
 app.use("/api/payouts", payoutRoutes);
 app.use("/api/bookings", bookingRoutes);
 
