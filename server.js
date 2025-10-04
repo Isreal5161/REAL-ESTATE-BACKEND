@@ -43,6 +43,7 @@ app.get('/api/health', (req, res) => {
 });
 
 // Routes
+
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/messages', messageRoutes);
@@ -50,6 +51,18 @@ app.use('/api/profile', profileRoutes);
 app.use('/api/verify', verificationRoutes);
 app.use('/api/listings', listingRoutes);
 app.use('/api/payouts', payoutRoutes);
+
+// Global error handler (must be after all routes)
+app.use((err, req, res, next) => {
+    console.error('Global error handler:', err);
+    if (res.headersSent) {
+        return next(err);
+    }
+    res.status(err.status || 500).json({
+        message: err.message || 'Internal Server Error',
+        error: process.env.NODE_ENV === 'production' ? undefined : err.stack
+    });
+});
 
 // Socket.IO Authentication and Connection Management
 const connectedAgents = new Map(); // Store agent socket connections
