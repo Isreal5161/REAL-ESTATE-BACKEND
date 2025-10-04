@@ -17,6 +17,19 @@ cloudinary.config({
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// Get listing by slug
+router.get("/by-slug/:slug", async (req, res) => {
+    try {
+        const listing = await Listing.findOne({ slug: req.params.slug });
+        if (!listing) {
+            return res.status(404).json({ message: "Listing not found" });
+        }
+        res.json(listing);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 // ✅ CREATE a new listing (with images)
 router.post("/", upload.array("images", 10), async (req, res) => {
   try {

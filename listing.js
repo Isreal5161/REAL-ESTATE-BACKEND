@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const listingSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
+    slug: { type: String, unique: true }, // Add slug field
     description: { type: String, required: true },
     propertyType: { type: String, required: true },
     listingType: { type: String, required: true },
