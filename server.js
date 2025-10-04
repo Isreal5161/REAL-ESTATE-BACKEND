@@ -77,6 +77,16 @@ io.on('connection', (socket) => {
 app.set('io', io);
 app.set('connectedAgents', connectedAgents);
 
+// Verify model files exist
+const fs = require('fs');
+const path = require('path');
+const userModelPath = path.join(__dirname, 'models', 'user.js');
+
+if (!fs.existsSync(userModelPath)) {
+    console.error(`Error: User model file not found at ${userModelPath}`);
+    process.exit(1);
+}
+
 // Database connection
 console.log('Connecting to MongoDB...');
 mongoose.connect(process.env.MONGODB_URI || process.env.MONGO_URI, {

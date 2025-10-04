@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Message = require('../models/message');
 const Conversation = require('../models/conversation');
-const User = require('../models/user');
+const User = require('../models/user.js');
 const auth = require('../middleware/auth');
 
 // Get all conversations for current user

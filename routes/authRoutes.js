@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const User = require('../models/user.js'); // Explicitly include the .js extension
 
 // Register new user
 router.post('/register', async (req, res) => {
