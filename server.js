@@ -12,8 +12,10 @@ const server = require('http').createServer(app);
 
 // Configure CORS
 app.use(cors({
-    origin: 'https://new-dashboard-admin-dasbboard.vercel.app',
-    credentials: true
+    origin: ['https://new-dashboard-admin-dasbboard.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 const io = require('socket.io')(server, {
     cors: {
@@ -30,12 +32,14 @@ const profileRoutes = require('./routes/profileRoutes');
 const verificationRoutes = require('./routes/verificationRoutes');
 const listingRoutes = require('./routes/listingRoutes');
 const payoutRoutes = require('./routes/payoutRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/profile', profileRoutes);
