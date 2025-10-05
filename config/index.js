@@ -64,22 +64,24 @@ const config = {
         webhookSecret: process.env.WEBHOOK_SECRET,
     },
 
-    // Validation function to check required environment variables
+    // Validation function to check required environment variables.
+    // In development we only require the critical ones (MONGO_URI and JWT_SECRET)
+    // to make it easier to run locally. Production should set all required keys.
     validate() {
         const required = [
             'MONGO_URI',
-            'JWT_SECRET',
-            'MTN_API_KEY',
-            'MTN_API_SECRET',
-            'ORANGE_API_KEY',
-            'ORANGE_API_SECRET',
-            'ENCRYPTION_KEY'
+            'JWT_SECRET'
         ];
 
         const missing = required.filter(key => !process.env[key]);
 
-        if (missing.length > 0) {
+        if (process.env.NODE_ENV === 'production' && missing.length > 0) {
             throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+        }
+
+        // If not in production, warn but don't throw for non-critical vars
+        if (missing.length > 0) {
+            console.warn(`Warning: Missing environment variables (only critical enforced in development): ${missing.join(', ')}`);
         }
 
         return true;

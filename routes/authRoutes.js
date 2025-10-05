@@ -103,9 +103,18 @@ router.get('/profile', async (req, res) => {
             console.warn('JWT verification failed for token:', token, 'error:', verifyErr.message);
             return res.status(401).json({ message: 'Invalid or expired token' });
         }
-        const user = await User.findById(decoded.userId).select('-password');
+
+        // Support tokens that put the user id under different claim names
+        const userId = decoded.userId || decoded.id || decoded.sub;
+        if (!userId) {
+            console.warn('Token decoded but contains no user id claim:', decoded);
+            return res.status(401).json({ message: 'Invalid token payload (missing user id)' });
+        }
+
+        const user = await User.findById(userId).select('-password');
 
         if (!user) {
+            console.warn(`Profile requested for user id ${userId} but no user found in DB`);
             return res.status(404).json({ message: 'User not found' });
         }
 

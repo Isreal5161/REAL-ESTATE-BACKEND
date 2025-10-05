@@ -43,6 +43,24 @@ app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Friendly root route so visiting the backend URL in a browser doesn't return "Cannot GET /"
+app.get('/', (req, res) => {
+    // If browser accepts HTML, send a small HTML page; otherwise send JSON
+    const accept = req.headers.accept || '';
+    if (accept.includes('text/html')) {
+        return res.send(`
+            <html>
+                <head><title>Real Estate Backend</title></head>
+                <body style="font-family: Arial, sans-serif; line-height:1.6; padding:2rem;">
+                    <h1>Real Estate Backend</h1>
+                    <p>Server is running. Use the <code>/api/health</code> endpoint for a JSON health check.</p>
+                </body>
+            </html>
+        `);
+    }
+    res.json({ status: 'Real Estate Backend', api: '/api', timestamp: new Date().toISOString() });
+});
+
 // Routes
 
 app.use('/api/auth', authRoutes);
@@ -76,7 +94,11 @@ io.use((socket, next) => {
     // Verify JWT token and store agent information
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) return next(new Error('Authentication error'));
-        socket.agentId = decoded.id;
+        // Support tokens that use either `userId` or `id` in the payload
+        socket.agentId = decoded.userId || decoded.id || decoded.sub;
+        if (!socket.agentId) {
+            return next(new Error('Authentication error: missing user id in token'));
+        }
         next();
     });
 });
