@@ -11,15 +11,16 @@ const PORT = process.env.PORT || 5000;
 const server = require('http').createServer(app);
 
 // Configure CORS
+// Allow all origins in development to simplify local testing (restrict in production)
 app.use(cors({
-    origin: ['https://new-dashboard-admin-dasbboard.vercel.app', 'http://localhost:3000', 'http://127.0.0.1:5500'],
+    origin: true,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept']
 }));
 const io = require('socket.io')(server, {
     cors: {
-        origin: ["https://new-dashboard-admin-dasbboard.vercel.app"],
+        origin: true,
         methods: ["GET", "POST"],
         credentials: true
     }

@@ -89,12 +89,20 @@ router.post('/login', async (req, res) => {
 // Get user profile
 router.get('/profile', async (req, res) => {
     try {
-        const token = req.headers.authorization?.split(' ')[1];
+        const authHeader = req.headers.authorization || '';
+        const token = authHeader.split(' ')[1];
         if (!token) {
+            console.warn('Profile fetch attempted without Authorization header:', authHeader);
             return res.status(401).json({ message: 'No token provided' });
         }
 
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key');
+        } catch (verifyErr) {
+            console.warn('JWT verification failed for token:', token, 'error:', verifyErr.message);
+            return res.status(401).json({ message: 'Invalid or expired token' });
+        }
         const user = await User.findById(decoded.userId).select('-password');
 
         if (!user) {
