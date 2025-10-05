@@ -67,6 +67,16 @@ router.post("/", upload.array("images", 10), async (req, res) => {
         images: imageUrls,
       });
       const savedListing = await newListing.save();
+      // Emit socket events to notify clients about new listing
+      try {
+        const io = req.app && req.app.get && req.app.get('io');
+        if (io) {
+          io.emit('newListing', savedListing);
+          io.emit('dashboardUpdate', { type: 'listingCreated', listingId: savedListing._id });
+        }
+      } catch (emitErr) {
+        console.error('Error emitting socket event for new listing:', emitErr);
+      }
       res.status(201).json(savedListing);
     } catch (dbErr) {
       console.error('MongoDB save error:', dbErr);
@@ -99,7 +109,17 @@ router.delete("/:id", async (req, res) => {
     if (!deletedListing) {
       return res.status(404).json({ message: "Listing not found" });
     }
-    
+    // Emit socket events to notify clients about listing deletion
+    try {
+      const io = req.app && req.app.get && req.app.get('io');
+      if (io) {
+        io.emit('listingDeleted', { id: deletedListing._id });
+        io.emit('dashboardUpdate', { type: 'listingDeleted', listingId: deletedListing._id });
+      }
+    } catch (emitErr) {
+      console.error('Error emitting socket event for listing deletion:', emitErr);
+    }
+
     res.json({ 
       message: "Listing deleted successfully", 
       deletedListing: deletedListing 

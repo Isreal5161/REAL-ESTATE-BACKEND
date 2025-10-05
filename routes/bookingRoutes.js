@@ -51,6 +51,17 @@ router.post('/', [
 
         await booking.save();
 
+        // Emit socket events so clients can refresh dashboards
+        try {
+            const io = req.app && req.app.get && req.app.get('io');
+            if (io) {
+                io.emit('newBooking', booking);
+                io.emit('dashboardUpdate', { type: 'bookingCreated', bookingId: booking._id });
+            }
+        } catch (emitErr) {
+            console.error('Error emitting socket event for new booking:', emitErr);
+        }
+
         // TODO: Send email notifications
         // TODO: Create calendar event
 
@@ -99,6 +110,17 @@ router.put('/:id', [
         // TODO: Send notification about booking update
         // TODO: Update calendar event
 
+        // Emit socket events to notify about booking update
+        try {
+            const io = req.app && req.app.get && req.app.get('io');
+            if (io) {
+                io.emit('bookingUpdated', booking);
+                io.emit('dashboardUpdate', { type: 'bookingUpdated', bookingId: booking._id });
+            }
+        } catch (emitErr) {
+            console.error('Error emitting socket event for booking update:', emitErr);
+        }
+
         res.json(booking);
     } catch (error) {
         console.error('Error updating booking:', error);
@@ -121,6 +143,17 @@ router.delete('/:id', auth, async (req, res) => {
         }
 
         await booking.remove();
+
+        // Emit socket events to notify about booking deletion
+        try {
+            const io = req.app && req.app.get && req.app.get('io');
+            if (io) {
+                io.emit('bookingDeleted', { id: booking._id });
+                io.emit('dashboardUpdate', { type: 'bookingDeleted', bookingId: booking._id });
+            }
+        } catch (emitErr) {
+            console.error('Error emitting socket event for booking deletion:', emitErr);
+        }
 
         // TODO: Send cancellation notification
         // TODO: Remove calendar event
